@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="SAFEPG",
-    version="0.2.1",
+    version="0.3.1",
     description="""The frequency-severity model has been widely adopted to analyze highly right-skewed data 
                     in actuarial science. To make the model more interpretable, we expect a predictor has 
                     the same direction of impact on both the frequency and severity. However, the 
