@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="SAFEPG",
-    version="0.3.1",
+    version="1.0.0",
     description="""The frequency-severity model has been widely adopted to analyze highly right-skewed data 
                     in actuarial science. To make the model more interpretable, we expect a predictor has 
                     the same direction of impact on both the frequency and severity. However, the 
@@ -16,8 +16,7 @@ setup(
                     To this end, we propose a novel sign-aligned regularization term to facilitate the sign 
                     consistency between the components in the frequency-severity model to enhance interpretability. 
                     We also demonstrate our design of the penalty leads to an algorithm which is quite efficient 
-                    in analyzing large-scale data. We implement our algorithm in a publicly available software 
-                    package and we demonstrate its superior performance with both simulation and real examples. """,
+                    in analyzing large-scale data. """,
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Yikai Zhang",
