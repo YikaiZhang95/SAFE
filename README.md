@@ -1,7 +1,7 @@
-# torchsvm
+# SAFEPG
 ![img](https://release-badges-generator.vercel.app/api/releases.svg?user=YikaiZhang95&repo=SAFE&gradient=0000ff,8bd1fa)
 
-This is a PyTorch-based package to solve kernel SVM with GPU.
+A Novel SAFE Model for Predicting Climate-Related Extreme Losses
 
 ## Table of contents
 
@@ -13,7 +13,14 @@ This is a PyTorch-based package to solve kernel SVM with GPU.
 
 ## Introduction
 
-torchsvm, a PyTorch-based library that trains kernel SVMs and other large-margin classifiers with exact leave-one-out cross-validation (LOOCV) error computation. Conventional SVM solvers often face scalability and efficiency challenges, especially on large datasets or when multiple cross-validation runs are required. torchsvm computes LOOCV at the same cost as training a single SVM while boosting speed and scalability via CUDA-accelerated matrix operations. Benchmark experiments indicate that TorchKSVM outperforms existing kernel SVM solvers in efficiency and speed. 
+The frequency-severity model has been widely adopted to analyze highly right-skewed data 
+in actuarial science. To make the model more interpretable, we expect a predictor has 
+the same direction of impact on both the frequency and severity. However, the 
+compotemporary use of the frequence-severity model typically yields inconsistent signs. 
+To this end, we propose a novel sign-aligned regularization term to facilitate the sign 
+consistency between the components in the frequency-severity model to enhance interpretability. 
+We also demonstrate our design of the penalty leads to an algorithm which is quite efficient 
+in analyzing large-scale data and its superior performance with both simulation and real examples.
 
 
 ## Installation
@@ -21,7 +28,7 @@ torchsvm, a PyTorch-based library that trains kernel SVMs and other large-margin
 You can use `pip` to install this package.
 
 ```sh
-pip install torchsvm
+pip install SAFEPG
 ```
 
 
@@ -30,70 +37,40 @@ pip install torchsvm
 The usages are similar with `scikit-learn`:
 
 ```python
-model = cvksvm(Kmat=Kmat, y=y_train, nlam=nlam, ulam=ulam, foldid=foldid, nfolds=nfolds, eps=1e-5, maxit=1000, gamma=1e-8, is_exact=0, device='cuda')
-model.fit()
+model = SafeModel()
+model.fit(x=x, y=y, k=k, lambda_=ulam)
 ```
 
 ## Usage
 
 ### Generate simulation data
-`torchsvm` provides a simulation data generation function to test functions in the library:
+`SAFEPG` provides a simulation data generation function to test functions in the library:
 
 ```python
-# Sample data
-nn = 10000 # Number of samples
-nm = 5    # Number of clusters per class
-pp = 10   # Number of features
-p1 = p2 = pp // 2    # Number of positive/negative centers
-mu = 2.0  # Mean shift
-ro = 3  # Standard deviation for normal distribution
-sdn = 42  # Seed for reproducibility
+from SAFEPG.SAFEPG import SafeModel
+import numpy as np
+from scipy.stats import poisson, gamma
 
-nlam = 50
-torch.manual_seed(sdn)
-ulam = torch.logspace(3, -3, steps=nlam)
+np.random.seed(0)
+n = 100
+p = 5
+x = np.random.randn(n, p)
+beta_true = np.full(5, 0.1)
+gamma_true = np.array([1, 1, 1, -1, -1])
 
-X_train, y_train, means_train = data_gen(nn, nm, pp, p1, p2, mu, ro, sdn)
-X_test, y_test, means_test = data_gen(nn // 10, nm, pp, p1, p2, mu, ro, sdn)
-X_train = standardize(X_train)
-X_test = standardize(X_test)
+mu = x @ beta_true
+k = poisson.rvs(mu=np.exp(mu))
+alpha_val = 1
+theta = np.exp(x @ gamma_true) / alpha_val
+y = gamma.rvs(a=alpha_val, scale=theta)
 
-sig = sigest(X_train)
-Kmat = rbf_kernel(X_train, sig)
+lambda_val = [1.0]
+ind_p = np.array([1, 1, 1, 0, 0])
+
+model = SafeModel()
+model.fit(x=x, y=y, k=k, lambda_=lambda_val, ind_p = ind_p)
 ```
-
-
-### Basic operation
-
-`torchsvm` mainly provides `cvksvm` to tune kernel SVM fast with GPU acceleration and compute exact leave-one-out cross-validation (LOOCV) errors if needed.
-
-```python
-model = cvksvm(Kmat=Kmat, y=y_train, nlam=nlam, ulam=ulam, foldid=foldid, nfolds=nfolds, eps=1e-5, maxit=1000, gamma=1e-8, is_exact=0, device='cuda')
-model.fit()
-```
-It also provides applications for other large-margin classifiers:
-
-1. Kernel logistic regression
-   ```python
-    model = cvklogit(Kmat=Kmat, y=y_train, nlam=nlam, ulam=ulam, foldid=foldid, nfolds=nfolds, eps=1e-5, maxit=1000, gamma=1e-8, is_exact=0, device='cuda')
-    model.fit()
-    ```
-2. Kernel SVM with Huber loss
-    ```python
-    model = cvkhuber(Kmat=Kmat, y=y_train, nlam=nlam, ulam=ulam, foldid=foldid, nfolds=nfolds, eps=1e-5, maxit=1000, gamma=1e-8, is_exact=0, device='cuda')
-    model.fit()
-    ```
-3. Kernel squared SVM
-   ```python
-    model = cvksqsvm(Kmat=Kmat, y=y_train, nlam=nlam, ulam=ulam, foldid=foldid, nfolds=nfolds, eps=1e-5, maxit=1000, gamma=1e-8, is_exact=0, device='cuda')
-    model.fit()
-    ```  
-
 
 ## Getting help
-
 Any questions or suggestions please contact: <yikai-zhang@uiowa.edu>
 
-
-# SAFE
-A Novel SAFE Model for Predicting Climate-Related Extreme Losses
