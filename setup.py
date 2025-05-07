@@ -8,7 +8,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="SAFEPG",
-    version="1.0.0",
+    version="1.0.1",
     description="""The frequency-severity model has been widely adopted to analyze highly right-skewed data 
                     in actuarial science. To make the model more interpretable, we expect a predictor has 
                     the same direction of impact on both the frequency and severity. However, the 
@@ -19,7 +19,7 @@ setup(
                     in analyzing large-scale data. """,
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="Yikai Zhang",
+    author="Yikai Zhang, Qian Tang, Boxiang Wang",
     packages=find_packages(include=["SAFEPG"]),
     classifiers=[
         "Programming Language :: Python :: 3",
